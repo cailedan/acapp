@@ -4,7 +4,7 @@ class AcGame {
         this.$ac_game = $('#' + id);
         this.menu = new AcGameMenu(this);
         //this.settings = new AcGameSettings(this);
-        //this.playground = new AcGamePlayground(this);
+        this.playground = new AcGamePlayground(this);
 
         this.start();
     }
