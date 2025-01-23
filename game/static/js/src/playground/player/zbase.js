@@ -19,6 +19,7 @@ class Player extends AcGameObject {
 
         this.cur_skill = null;
         this.friction = 0.9;
+        this.spent_time = 0;
     }
 
     start() {
@@ -99,8 +100,29 @@ class Player extends AcGameObject {
         this.damagey = Math.sin(angle);
         this.damage_speed = damage * 10;
 
+        for (let i = 0; i < 10 * Math.random() * 5; i++) {
+            let x = this.x, y = this.y;
+            let radius = this.radius * Math.random() * 0.21;
+            let angle = Math.random() * Math.PI * 2;
+            let vx = Math.cos(angle), vy = Math.sin(angle);
+            let color = this.color;
+            let speed = this.speed * 10;
+            let move_length = this.radius * Math.random() * 10;
+            new Particle(this.playground, x, y, radius, vx, vy, color, speed, move_length);
+
+        }
+
     }
     update() {
+        this.spent_time += this.timedelta / 1000;
+        if (this.spent_time > 5 && this.is_me === "robot") {
+            if (Math.random() < 1 / 180.0) {
+                let player = this.playground.players[0];
+                this.shoot_fireball(player.x, player.y);
+            }
+        }
+
+
         if (this.damage_speed > this.aps * 10) {
             this.vx = this.vy = 0;
             this.move_length = 0;
