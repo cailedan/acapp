@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
     <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="{% static 'css/game.css' %}">
-    <script src="{% static 'js/dist/game.js' %}"></script>
+
 
 
 
@@ -19,7 +19,7 @@
 <body style="margin: 0;">
     <div id="ac-game-1"></div>
     <script type="module">
-
+        import AcGame from "{% static 'js/dist/game.js' %}";
         $(document).ready(function () {
             let ac_game = new AcGame("ac-game-1");
         });
