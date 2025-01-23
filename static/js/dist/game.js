@@ -6,10 +6,11 @@ class AcGameMenu {
             </div>
             `);
         this.root.$ac_game.append(this.$menu);
-
+        console.log(this.$menu);
+        console.log("menu");
     }
 }
-class AcGame {
+export class AcGame {
     constructor(id) {
         this.id = id;
         this.$ac_game = $('#' + id);
