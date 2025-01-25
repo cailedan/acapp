@@ -82,6 +82,7 @@ class Settings {
         this.$login_error_message = this.$login.find(".ac-game-settings-error-message");
         this.$login_options = this.$login.find(".ac-game-settings-options");
         this.$login.hide();
+        this.$login_error_message.hide();
 
         this.$register = this.$settings.find(".ac-game-settings-register");
         this.$register_username = this.$register.find(".ac-game-settings-username input");
@@ -91,6 +92,7 @@ class Settings {
         this.$register_error_message = this.$register.find(".ac-game-settings-error-message");
         this.$register_options = this.$register.find(".ac-game-settings-options");
         this.$register.hide();
+        this.$register_error_message.hide();
 
         this.root.$ac_game.append(this.$settings);
         this.start();
@@ -111,6 +113,9 @@ class Settings {
         this.$login_options.click(() => {
             outer.register();
         });
+        this.$login_submit.click(() => {
+            outer.login_on_remote();
+        });
     }
 
     add_listening_events_register() {
@@ -118,6 +123,38 @@ class Settings {
         this.$register_options.click(() => {
             outer.login();
         });
+        this.$register_submit.click(() => {
+        });
+    }
+
+    login_on_remote() {  //在远程服务器上登录
+        let username = this.$login_username.val();
+        let password = this.$login_password.val();
+        this.$login_error_message.hide();
+        $.ajax({
+            url: "https://app7342.acapp.acwing.com.cn/settings/signin/",
+            type: "GET",
+            data: {
+                platform: outer.platform,
+                username: username,
+                password: password,
+            },
+            success: (resp) => {
+                console.log(resp);
+                if (resp.result === "success") {
+                    location.reload();
+                }
+                else {
+                    outer.$login_error_message.show();
+                }
+            }
+        });
+    }
+    register_on_remote() {
+    }
+
+    logout_on_remote() {
+
     }
 
     getinfo() {
