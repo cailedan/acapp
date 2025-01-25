@@ -1,3 +1,127 @@
+.ac-game-settings {
+    width: 100%;
+    height: 100%;
+
+    background-image: url("/static/images/menu/background.jpg");
+    background-size: 100% 100%;
+    user-select: none;
+}
+
+.ac-game-settings-login {
+    width: 20vw;
+    height: 41vh;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(39, 21, 28, 0.6);
+    border-radius: 5px;
+}
+
+.ac-game-settings-register {
+    width: 20vw;
+    height: 49vh;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(39, 21, 28, 0.6);
+    border-radius: 5px;
+}
+
+.ac-game-settings-title {
+    color: white;
+    font-size: 3vh;
+    text-align: center;
+    height: 7vh;
+    padding-top: 2vh;
+    margin-bottom: 2vh;
+}
+
+.ac-game-settings-username {
+    display: block;
+    height: 7vh;
+}
+
+.ac-game-settings-password {
+    display: block;
+    height: 7vh;
+}
+
+.ac-game-settings-submit {
+    display: block;
+    height: 7vh;
+}
+
+.ac-game-settings-acwing {
+    display: block;
+    height: 7vh;
+}
+
+.ac-game-settings-item {
+    width: 100%;
+    height: 100%;
+}
+
+.ac-game-settings-item>input {
+    width: 86%;
+    line-height: 3vh;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.ac-game-settings-item>button {
+    color: white;
+    background-color: rgba(82, 239, 103, 1);
+    width: 86%;
+    line-height: 3vh;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 5px;
+    border: none;
+}
+
+.ac-game-settings-acwing>img {
+
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+
+}
+
+.ac-game-settings-acwing-text {
+    font-size: 1.5vh;
+    text-align: center;
+    color: white;
+}
+
+.ac-game-settings-error-message {
+    color: red;
+    font-size: 2vh;
+    display: inline;
+    float: left;
+    padding-left: 1vw;
+
+}
+
+.ac-game-settings-options {
+    color: white;
+    font-size: 3vh;
+    display: inline;
+    float: right;
+    padding-right: 1vw;
+    cursor: pointer;
+}
+
+
+
+
 .ac-game-menu {
     width: 100%;
     height: 100%;
