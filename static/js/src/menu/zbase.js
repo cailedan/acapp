@@ -23,6 +23,7 @@ class AcGameMenu {
         this.$multi = this.$menu.find('.ac-game-menu-field-item-multiplayer');
         this.$settings = this.$menu.find('.ac-game-menu-field-item-settings');
 
+        this.menu_hide();
         this.start();
     }
 

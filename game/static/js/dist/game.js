@@ -23,6 +23,7 @@ class AcGameMenu {
         this.$multi = this.$menu.find('.ac-game-menu-field-item-multiplayer');
         this.$settings = this.$menu.find('.ac-game-menu-field-item-settings');
 
+        this.menu_hide();
         this.start();
     }
 
@@ -191,6 +192,12 @@ requestAnimationFrame(AC_GAME_ANIMATION);class GameMap extends AcGameObject {
         this.cur_skill = null;
         this.friction = 0.9;
         this.spent_time = 0;
+
+        if (this.is_me === "me") {
+            this.img = new Image();
+            this.img.src = this.playground.root.settings.photo;
+
+        }
     }
 
     start() {
@@ -326,11 +333,22 @@ requestAnimationFrame(AC_GAME_ANIMATION);class GameMap extends AcGameObject {
     }
 
     render() {
-        this.ctx.beginPath();
-        this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-        this.ctx.fillStyle = this.color;
-        this.ctx.fill();
+        if (this.is_me === "me") {
+            this.ctx.save();
+            this.ctx.beginPath();
+            this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+            this.ctx.stroke();
+            this.ctx.clip();
+            this.ctx.drawImage(this.img, this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
+            this.ctx.restore();
+        }
+        else if (this.is_me === "robot") {
+            this.ctx.beginPath();
+            this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+            this.ctx.fillStyle = this.color;
+            this.ctx.fill();
 
+        }
     }
 }
 class FireBall extends AcGameObject {
@@ -441,12 +459,72 @@ class FireBall extends AcGameObject {
     playground_hide() {
         this.$playground.hide();
     }
+}class Settings {
+    constructor(root) {
+
+        this.root = root;
+        this.platform = "web";
+        if (this.root.AcWingOs) this.platform = "acapp";
+
+        this.start();
+
+    }
+
+    start() {
+        this.getinfo();
+    }
+
+    getinfo() {
+        let outer = this;
+        $.ajax({
+            url: "https://app7342.acapp.acwing.com.cn/settings/getinfo/",
+            type: "GET",
+            data: {
+                platform: outer.platform,
+            },
+            success: (resp) => {
+                console.log(resp);
+                if (resp.result === "success") {
+                    outer.username = resp.data.username;
+                    outer.photo = resp.data.photo;
+                    outer.settings_hide();
+                    outer.root.menu.menu_show();
+                } else {
+                    outer.login();
+                }
+            }
+        });
+    }
+
+    settings_hide() {
+        //this.$settings.hide();
+    }
+    login() {
+        /*if (this.platform === "acapp") {
+            this.root.AcWingOs.login();
+            return;
+        }*/
+
+        //this.$settings.show();
+    }
+    register() {
+        // if (this.platform === "acapp") {
+        //     this.root.AcWingOs.register();
+        //     return;
+        // }
+
+        //this.$settings.show();
+    }
+
+
 }export class AcGame {
-    constructor(id) {
+    constructor(id, AcWingOs) {
         this.id = id;
         this.$ac_game = $('#' + id);
-         this.menu = new AcGameMenu(this);
-        //this.settings = new AcGameSettings(this);
+        this.AcWingOs = AcWingOs;
+
+        this.settings = new Settings(this);
+        this.menu = new AcGameMenu(this);
         this.playground = new AcGamePlayground(this);
 
         this.start();
