@@ -42,7 +42,7 @@ class AcGameMenu {
             console.log("multi");
         })
         this.$settings.click(() => {
-            console.log("settings");
+            outer.root.settings.logout_on_remote();
         })
     }
 

@@ -42,7 +42,7 @@ class AcGameMenu {
             console.log("multi");
         })
         this.$settings.click(() => {
-            console.log("settings");
+            outer.root.settings.logout_on_remote();
         })
     }
 
@@ -489,7 +489,7 @@ class FireBall extends AcGameObject {
                         </div>
                     </div>
                     <div class="ac-game-settings-error-message">
-                        用户名或密码错误
+                        
                     </div>
                     <div class="ac-game-settings-options">
                         注册
@@ -528,7 +528,7 @@ class FireBall extends AcGameObject {
                         </div>
                     </div>
                     <div class="ac-game-settings-error-message">
-                        用户名或密码错误
+                       
                     </div>
                     <div class="ac-game-settings-options">
                         登录
@@ -543,7 +543,7 @@ class FireBall extends AcGameObject {
         this.$login_error_message = this.$login.find(".ac-game-settings-error-message");
         this.$login_options = this.$login.find(".ac-game-settings-options");
         this.$login.hide();
-        this.$login_error_message.hide();
+        // this.$login_error_message.hide();
 
         this.$register = this.$settings.find(".ac-game-settings-register");
         this.$register_username = this.$register.find(".ac-game-settings-username input");
@@ -553,7 +553,7 @@ class FireBall extends AcGameObject {
         this.$register_error_message = this.$register.find(".ac-game-settings-error-message");
         this.$register_options = this.$register.find(".ac-game-settings-options");
         this.$register.hide();
-        this.$register_error_message.hide();
+        // this.$register_error_message.hide();
 
         this.root.$ac_game.append(this.$settings);
         this.start();
@@ -585,37 +585,70 @@ class FireBall extends AcGameObject {
             outer.login();
         });
         this.$register_submit.click(() => {
+            outer.register_on_remote();
         });
     }
 
     login_on_remote() {  //在远程服务器上登录
         let username = this.$login_username.val();
         let password = this.$login_password.val();
-        this.$login_error_message.hide();
+        this.$login_error_message.empty();
+
+        let outer = this;
         $.ajax({
             url: "https://app7342.acapp.acwing.com.cn/settings/signin/",
             type: "GET",
             data: {
-                platform: outer.platform,
+
                 username: username,
                 password: password,
             },
             success: (resp) => {
-                console.log(resp);
+
                 if (resp.result === "success") {
                     location.reload();
                 }
                 else {
-                    outer.$login_error_message.show();
+                    outer.$login_error_message.html();
                 }
             }
         });
     }
     register_on_remote() {
+        let outer = this;
+        let username = this.$register_username.val();
+        let password = this.$register_password.val();
+        let password_confirm = this.$register_password_confirm.val();
+        this.$register_error_message.empty();
+        $.ajax({
+            url: "https://app7342.acapp.acwing.com.cn/settings/register/",
+            type: "GET",
+            data: {
+                username: username,
+                password: password,
+                password_confirm: password_confirm,
+            },
+            success: (resp) => {
+                if (resp.result === "success") {
+                    location.reload();
+                } else {
+                    outer.$register_error_message.html(resp.result);
+                }
+            }
+        })
     }
 
     logout_on_remote() {
-
+        if (this.platform === "acapp") return false;
+        $.ajax({
+            url: "https://app7342.acapp.acwing.com.cn/settings/signout/",
+            type: "GET",
+            success: (resp) => {
+                if (resp.result === "success") {
+                    location.reload();
+                }
+            }
+        });
     }
 
     getinfo() {
@@ -641,7 +674,7 @@ class FireBall extends AcGameObject {
     }
 
     settings_hide() {
-        //this.$settings.hide();
+        this.$settings.hide();
     }
     login() {
 
