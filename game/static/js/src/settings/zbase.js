@@ -81,6 +81,7 @@ class Settings {
         this.$login_submit = this.$login.find(".ac-game-settings-submit button");
         this.$login_error_message = this.$login.find(".ac-game-settings-error-message");
         this.$login_options = this.$login.find(".ac-game-settings-options");
+        this.$acwing_lgion = this.$settings.find(".ac-game-settings-acwing img");
         this.$login.hide();
         // this.$login_error_message.hide();
 
@@ -107,6 +108,10 @@ class Settings {
     add_listening_events() {
         this.add_listening_events_login();
         this.add_listening_events_register();
+
+        this.$acwing_lgion.click(() => {
+            this.acwing_login();
+        });
     }
     add_listening_events_login() {
         let outer = this;
@@ -126,6 +131,21 @@ class Settings {
         this.$register_submit.click(() => {
             outer.register_on_remote();
         });
+    }
+
+    acwing_login() {
+        $.ajax({
+            url: "https://app7342.acapp.acwing.com.cn/settings/acwing/web/apply_code/",
+            type: "GET",
+            success: function (resp) {
+                if (resp.result === "success") {
+                    window.location.replace(resp.apply_code_url);
+                }
+                else {
+                    alert("获取登录链接失败");
+                }
+            }
+        })
     }
 
     login_on_remote() {  //在远程服务器上登录
