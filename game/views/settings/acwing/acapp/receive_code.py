@@ -10,15 +10,19 @@ from django.http import JsonResponse
 def receive_code(request):
 
     if "errorcode" in request.GET:
-        return JSONResponse({
-            "result": "false",
-            "error_message": "获取信息失败"
+        return JsonResponse({
+            "result": "apply failed",
+            "errorcode": request.GET["errorcode"],
+            "errormsg": request.GET["errormsg"],
         })
 
     code = request.GET.get("code")
     state = request.GET.get("state")
     if not cache.has_key(state):
-        return redirect("index")
+        return JsonResponse({
+            "result": "state not exist",
+            
+        })
     
     cache.delete(state)
 
@@ -35,9 +39,12 @@ def receive_code(request):
 
     player = Player.objects.filter(openid = openid) 
     if player.exists():  # 如果这个用户已存在，则无需获取信息，直接登录即可
-        player = player[0]  
-        login(request , player.user)
-        return redirect("index")
+        player = player[0]
+        return JsonResponse({
+            "result": "success",
+            "username": player.user.username,
+            "photo": player.photo,
+        })
     
     get_userinfo_url = "https://www.acwing.com/third_party/api/meta/identity/getinfo/"
 
@@ -54,6 +61,11 @@ def receive_code(request):
 
     user = User.objects.create(username = username)
     player = Player.objects.create(user = user , photo = photo , openid = openid)
-    login(request , user)
 
-    return redirect("index")
+
+    return JsonResponse({
+            "result": "success",
+            "username": player.user.username,
+            "photo": player.photo,
+        })
+    
