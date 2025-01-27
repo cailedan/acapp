@@ -7,7 +7,7 @@ def getinfo_acapp(request):
     return JsonResponse({
         'result': 'success',
         'data': {
-            'name': player.user.username,
+            'username': player.user.username,
             'photo': player.photo,
         }
     })
@@ -25,7 +25,7 @@ def getinfo_web(request):
          return JsonResponse({
             'result': 'success',
             'data': {
-                'name': player.user.username,
+                'username': player.user.username,
                 'photo': player.photo,
                }
          })

@@ -63,6 +63,18 @@ class AcGameObject {
         AC_GAME_OBJECTS.push(this);
         this.has_called_start = false;
         this.timedelta = 0; // ms ,距离上一帧的时间间隔
+        this.uuid = this.create_uuid(); //创建每个对象的唯一id
+
+    }
+
+    create_uuid() {
+        let res = "";
+        for (let i = 0; i < 8; i++) {
+            let x = parseInt(Math.floor(Math.random() * 10));
+            res += x;
+        }
+        return res;
+
     }
 
     start() {
@@ -449,6 +461,27 @@ class FireBall extends AcGameObject {
     }
 
     start() {
+        this.receive();
+    }
+
+    receive() {
+        this.ws.onmessage = function (e) {
+            let data = JSON.parse(e.data);
+            console.log(data);
+        };
+    }
+
+    send_create_player(username, photo) {
+        let outer = this;
+        console.log("send_create_player", username, photo);
+        this.ws.send(JSON.stringify({
+            'event': 'create_player',
+            'uuid': outer.uuid,
+            'username': username,
+            'photo': photo,
+        }));
+    }
+    receive_create_player(data) {
 
     }
 }class AcGamePlayground {
@@ -490,6 +523,7 @@ class FireBall extends AcGameObject {
 
 
     playground_show(mode) {
+
         this.$playground.show();
 
 
@@ -504,8 +538,13 @@ class FireBall extends AcGameObject {
             }
         }
         else if (mode === "multi_mode") {
-            console.log("multi_mode");
+            let outer = this;
             this.mps = new MultiPlayerSocket(this)
+            this.mps.uuid = this.players[0].uuid;  // 创建链接的窗口player的uuid
+            this.mps.ws.onopen = () => {
+                outer.mps.send_create_player(this.root.settings.username, this.root.settings.photo);
+
+            };
         }
     }
     playground_hide() {

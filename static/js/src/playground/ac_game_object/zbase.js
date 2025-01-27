@@ -5,6 +5,18 @@ class AcGameObject {
         AC_GAME_OBJECTS.push(this);
         this.has_called_start = false;
         this.timedelta = 0; // ms ,距离上一帧的时间间隔
+        this.uuid = this.create_uuid(); //创建每个对象的唯一id
+
+    }
+
+    create_uuid() {
+        let res = "";
+        for (let i = 0; i < 8; i++) {
+            let x = parseInt(Math.floor(Math.random() * 10));
+            res += x;
+        }
+        return res;
+
     }
 
     start() {

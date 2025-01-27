@@ -37,6 +37,7 @@ class AcGamePlayground {
 
 
     playground_show(mode) {
+
         this.$playground.show();
 
 
@@ -51,8 +52,13 @@ class AcGamePlayground {
             }
         }
         else if (mode === "multi_mode") {
-            console.log("multi_mode");
+            let outer = this;
             this.mps = new MultiPlayerSocket(this)
+            this.mps.uuid = this.players[0].uuid;  // 创建链接的窗口player的uuid
+            this.mps.ws.onopen = () => {
+                outer.mps.send_create_player(this.root.settings.username, this.root.settings.photo);
+
+            };
         }
     }
     playground_hide() {
