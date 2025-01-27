@@ -1,5 +1,5 @@
 class Player extends AcGameObject {
-    constructor(playground, x, y, radius, color, speed, is_me) {
+    constructor(playground, x, y, radius, color, speed, is_me, username, photo) {
         super();
         this.playground = playground;
         this.ctx = this.playground.game_map.ctx;
@@ -15,15 +15,17 @@ class Player extends AcGameObject {
         this.damagey = 0;
         this.damage_speed = 0;
         this.is_me = is_me;
+        this.username = username;
+        this.photo = photo;
         this.aps = 0.01;
 
         this.cur_skill = null;
         this.friction = 0.9;
         this.spent_time = 0;
 
-        if (this.is_me === "me") {
+        if (this.is_me !== "robot") {
             this.img = new Image();
-            this.img.src = this.playground.root.settings.photo;
+            this.img.src = photo;
 
         }
     }
@@ -93,9 +95,9 @@ class Player extends AcGameObject {
     }
 
     was_attacked(angle, damage) {
-        console.log(this.radius, damage);
+
         this.radius -= damage;
-        console.log(this.radius);
+
         if (this.radius <= this.aps) {
             this.destroy();
             for (let i = 0; i < this.playground.players.length; i++) {
@@ -168,7 +170,7 @@ class Player extends AcGameObject {
 
     render() {
         let scale = this.playground.scale;
-        if (this.is_me === "me") {
+        if (this.is_me !== "robot") {
             this.ctx.save();
             this.ctx.beginPath();
             this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);

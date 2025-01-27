@@ -36,17 +36,23 @@ class AcGamePlayground {
     }
 
 
-    playground_show() {
+    playground_show(mode) {
         this.$playground.show();
 
 
         this.game_map = new GameMap(this);
         this.resize();
         this.players = [];
-        this.players.push(new Player(this, this.width / 2 / this.scale, this.height / 2 / this.scale, this.height * 0.05 / this.scale, "white", this.height * 0.15 / this.scale, "me"))
+        this.players.push(new Player(this, this.width / 2 / this.scale, this.height / 2 / this.scale, this.height * 0.05 / this.scale, "white", this.height * 0.15 / this.scale, "me", this.root.settings.username, this.root.settings.photo))
 
-        for (let i = 0; i < 5; i++) {
-            this.players.push(new Player(this, this.width / 2 / this.scale, this.height / 2 / this.scale, this.height * 0.05 / this.scale, this.get_random_color(), this.height * 0.15 / this.scale, "robot"))
+        if (mode === "single_mode") {
+            for (let i = 0; i < 5; i++) {
+                this.players.push(new Player(this, this.width / 2 / this.scale, this.height / 2 / this.scale, this.height * 0.05 / this.scale, this.get_random_color(), this.height * 0.15 / this.scale, "robot"))
+            }
+        }
+        else if (mode === "multi_mode") {
+            console.log("multi_mode");
+            this.mps = new MultiPlayerSocket(this)
         }
     }
     playground_hide() {

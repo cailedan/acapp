@@ -35,11 +35,12 @@ class AcGameMenu {
         let outer = this;
         this.$single.click(() => {
             outer.menu_hide();
-            outer.root.playground.playground_show();
+            outer.root.playground.playground_show("single_mode");
         })
 
         this.$multi.click(() => {
-            console.log("multi");
+            outer.menu_hide();
+            outer.root.playground.playground_show("multi_mode");
         })
         this.$settings.click(() => {
             outer.root.settings.logout_on_remote();
@@ -179,7 +180,7 @@ requestAnimationFrame(AC_GAME_ANIMATION);class GameMap extends AcGameObject {
         this.ctx.fill();
     }
 }class Player extends AcGameObject {
-    constructor(playground, x, y, radius, color, speed, is_me) {
+    constructor(playground, x, y, radius, color, speed, is_me, username, photo) {
         super();
         this.playground = playground;
         this.ctx = this.playground.game_map.ctx;
@@ -195,15 +196,17 @@ requestAnimationFrame(AC_GAME_ANIMATION);class GameMap extends AcGameObject {
         this.damagey = 0;
         this.damage_speed = 0;
         this.is_me = is_me;
+        this.username = username;
+        this.photo = photo;
         this.aps = 0.01;
 
         this.cur_skill = null;
         this.friction = 0.9;
         this.spent_time = 0;
 
-        if (this.is_me === "me") {
+        if (this.is_me !== "robot") {
             this.img = new Image();
-            this.img.src = this.playground.root.settings.photo;
+            this.img.src = photo;
 
         }
     }
@@ -273,9 +276,9 @@ requestAnimationFrame(AC_GAME_ANIMATION);class GameMap extends AcGameObject {
     }
 
     was_attacked(angle, damage) {
-        console.log(this.radius, damage);
+
         this.radius -= damage;
-        console.log(this.radius);
+
         if (this.radius <= this.aps) {
             this.destroy();
             for (let i = 0; i < this.playground.players.length; i++) {
@@ -348,7 +351,7 @@ requestAnimationFrame(AC_GAME_ANIMATION);class GameMap extends AcGameObject {
 
     render() {
         let scale = this.playground.scale;
-        if (this.is_me === "me") {
+        if (this.is_me !== "robot") {
             this.ctx.save();
             this.ctx.beginPath();
             this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);
@@ -437,6 +440,17 @@ class FireBall extends AcGameObject {
         this.ctx.fill();
 
     }
+}class MultiPlayerSocket {
+    constructor(playground) {
+        this.playground = playground;
+        this.ws = new WebSocket("wss://app7342.acapp.acwing.com.cn/wss/multiplayer/");
+
+        this.start();
+    }
+
+    start() {
+
+    }
 }class AcGamePlayground {
     constructor(root) {
         this.root = root;
@@ -475,17 +489,23 @@ class FireBall extends AcGameObject {
     }
 
 
-    playground_show() {
+    playground_show(mode) {
         this.$playground.show();
 
 
         this.game_map = new GameMap(this);
         this.resize();
         this.players = [];
-        this.players.push(new Player(this, this.width / 2 / this.scale, this.height / 2 / this.scale, this.height * 0.05 / this.scale, "white", this.height * 0.15 / this.scale, "me"))
+        this.players.push(new Player(this, this.width / 2 / this.scale, this.height / 2 / this.scale, this.height * 0.05 / this.scale, "white", this.height * 0.15 / this.scale, "me", this.root.settings.username, this.root.settings.photo))
 
-        for (let i = 0; i < 5; i++) {
-            this.players.push(new Player(this, this.width / 2 / this.scale, this.height / 2 / this.scale, this.height * 0.05 / this.scale, this.get_random_color(), this.height * 0.15 / this.scale, "robot"))
+        if (mode === "single_mode") {
+            for (let i = 0; i < 5; i++) {
+                this.players.push(new Player(this, this.width / 2 / this.scale, this.height / 2 / this.scale, this.height * 0.05 / this.scale, this.get_random_color(), this.height * 0.15 / this.scale, "robot"))
+            }
+        }
+        else if (mode === "multi_mode") {
+            console.log("multi_mode");
+            this.mps = new MultiPlayerSocket(this)
         }
     }
     playground_hide() {

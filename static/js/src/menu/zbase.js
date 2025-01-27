@@ -35,11 +35,12 @@ class AcGameMenu {
         let outer = this;
         this.$single.click(() => {
             outer.menu_hide();
-            outer.root.playground.playground_show();
+            outer.root.playground.playground_show("single_mode");
         })
 
         this.$multi.click(() => {
-            console.log("multi");
+            outer.menu_hide();
+            outer.root.playground.playground_show("multi_mode");
         })
         this.$settings.click(() => {
             outer.root.settings.logout_on_remote();
