@@ -1,6 +1,8 @@
 class Player extends AcGameObject {
     constructor(playground, x, y, radius, color, speed, is_me, username, photo) {
+
         super();
+        console.log(is_me, username, this.uuid);
         this.playground = playground;
         this.ctx = this.playground.game_map.ctx;
         this.x = x;
