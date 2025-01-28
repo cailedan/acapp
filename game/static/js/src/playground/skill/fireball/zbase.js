@@ -25,12 +25,23 @@ class FireBall extends AcGameObject {
             this.destroy();
             return false;
         }
+        this.update_move();
+        if (this.player.is_me !== "enemy") {
+            this.update_attack();
+        }
+
+        this.render();
+    }
+
+    update_move() {
 
         let moved = Math.min(this.move_length, this.speed * this.timedelta / 1000);
         this.x += this.vx * moved;
         this.y += this.vy * moved;
         this.move_length -= moved;
+    }
 
+    update_attack() {
         for (let i = 0; i < this.playground.players.length; i++) {
             let player = this.playground.players[i];
             if (this.player != player && this.is_collision(player)) {
@@ -38,13 +49,16 @@ class FireBall extends AcGameObject {
             }
         }
 
-        this.render();
     }
 
     attack(player) {
         let angle = Math.atan2(player.y - this.y, player.x - this.x);
 
         player.was_attacked(angle, this.damage);
+
+        if (this.playground.mode === "multi_mode") {
+            this.playground.mps.send_attack(player.uuid, player.x, player.y, angle, this.damage, this.uuid);
+        }
         this.destroy();
     }
 

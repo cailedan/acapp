@@ -204,16 +204,20 @@ class Settings {
     }
 
     logout_on_remote() {
-        if (this.platform === "acapp") return false;
-        $.ajax({
-            url: "https://app7342.acapp.acwing.com.cn/settings/signout/",
-            type: "GET",
-            success: (resp) => {
-                if (resp.result === "success") {
-                    location.reload();
+        if (this.platform === "acapp") {
+            this.root.AcWingOs.api.window.close();
+        }
+        else {
+            $.ajax({
+                url: "https://app7342.acapp.acwing.com.cn/settings/signout/",
+                type: "GET",
+                success: (resp) => {
+                    if (resp.result === "success") {
+                        location.reload();
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     acapp_login(appid, redirect_uri, scope, state) {

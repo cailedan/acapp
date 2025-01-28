@@ -43,6 +43,9 @@ class AcGamePlayground {
 
         this.game_map = new GameMap(this);
         this.resize();
+        this.mode = mode;
+        this.state = "waiting";
+        this.player_count = 0;
         this.players = [];
         this.players.push(new Player(this, this.width / 2 / this.scale, this.height / 2 / this.scale, this.height * 0.05 / this.scale, "white", this.height * 0.15 / this.scale, "me", this.root.settings.username, this.root.settings.photo))
 
@@ -59,6 +62,7 @@ class AcGamePlayground {
                 outer.mps.send_create_player(this.root.settings.username, this.root.settings.photo);
 
             };
+            this.notice_board = new NoticeBoard(this);
         }
     }
     playground_hide() {

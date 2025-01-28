@@ -2,7 +2,7 @@ class Player extends AcGameObject {
     constructor(playground, x, y, radius, color, speed, is_me, username, photo) {
 
         super();
-        console.log(is_me, username, this.uuid);
+
         this.playground = playground;
         this.ctx = this.playground.game_map.ctx;
         this.x = x;
@@ -24,6 +24,7 @@ class Player extends AcGameObject {
         this.cur_skill = null;
         this.friction = 0.9;
         this.spent_time = 0;
+        this.fireballs = [];
 
         if (this.is_me !== "robot") {
             this.img = new Image();
@@ -33,6 +34,12 @@ class Player extends AcGameObject {
     }
 
     start() {
+        this.playground.player_count++;
+        if (this.playground.players.length >= 2) {
+            this.playground.state = "fighting";
+
+        }
+
         if (this.is_me === "me") {
             this.add_listening_events();
         }
@@ -45,18 +52,34 @@ class Player extends AcGameObject {
 
     add_listening_events() {
 
+
         this.playground.game_map.$canvas.on("contextmenu", () => {
             return false;
         });
         this.playground.game_map.$canvas.on("mousedown", (e) => {
+            if (this.playground.mode === "multi_mode") {
+                if (this.playground.state === "waiting") {
+                    return false;
+                }
+            }
             const rect = this.ctx.canvas.getBoundingClientRect();
             if (e.which === 3) {
-                this.move_to((e.clientX - rect.left) / this.playground.scale, (e.clientY - rect.top) / this.playground.scale);
-
+                let tx = (e.clientX - rect.left) / this.playground.scale;
+                let ty = (e.clientY - rect.top) / this.playground.scale;
+                this.move_to(tx, ty);
+                if (this.playground.mode === "multi_mode") {
+                    this.playground.mps.send_move_to(tx, ty);
+                }
             }
             else if (e.which === 1) {
+                let tx = (e.clientX - rect.left) / this.playground.scale;
+                let ty = (e.clientY - rect.top) / this.playground.scale;
                 if (this.cur_skill === "fireball") {
-                    this.shoot_fireball((e.clientX - rect.left) / this.playground.scale, (e.clientY - rect.top) / this.playground.scale);
+
+                    let fireball = this.shoot_fireball(tx, ty);
+                    if (this.playground.mode === "multi_mode") {
+                        this.playground.mps.send_shoot_fireball(tx, ty, fireball.uuid);
+                    }
                 }
 
                 this.cur_skill = null;
@@ -81,7 +104,24 @@ class Player extends AcGameObject {
         let move_length = this.playground.height / this.playground.scale;
         let damage = this.playground.height * 0.015 / this.playground.scale;
 
-        new FireBall(this.playground, this, x, y, radius, vx, vy, color, speed, move_length, damage);
+        let fireball = new FireBall(this.playground, this, x, y, radius, vx, vy, color, speed, move_length, damage);
+        this.fireballs.push(fireball);
+        return fireball;
+    }
+    destroy_fireball(uuid) {
+        for (let i = 0; i < this.fireballs.length; i++) {
+            let fireball = this.fireballs[i];
+            if (fireball.uuid === uuid) {
+                fireball.destroy();
+                this.fireballs.splice(i, 1);
+                break;
+            }
+        }
+    }
+    receive_attacked(x, y, angle, damage, ball_uuid, attacker) {
+        this.x = x
+        this.y = y
+        this.was_attacked(angle, damage);
     }
 
     get_dist(x1, y1, x2, y2) {
