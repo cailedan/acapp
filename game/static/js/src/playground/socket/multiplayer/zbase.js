@@ -29,6 +29,9 @@ class MultiPlayerSocket {
             else if (event === "attack") {
                 outer.receive_attack(uuid, data.attackee_uuid, data.x, data.y, data.angle, data.damage, data.ball_uuid);
             }
+            else if (event === "send_message") {
+                outer.receive_message(uuid, data.text);
+            }
         };
     }
 
@@ -69,7 +72,7 @@ class MultiPlayerSocket {
         }));
     }
 
-    get_palyer(uuid) {
+    get_player(uuid) {
         for (let i = 0; i < this.playground.players.length; i++) {
             let player = this.playground.players[i];
             if (player.uuid === uuid) {
@@ -79,7 +82,7 @@ class MultiPlayerSocket {
         return false;
     }
     receive_move_to(uuid, tx, ty) {
-        let player = this.get_palyer(uuid);
+        let player = this.get_player(uuid);
         if (player) {
             player.move_to(tx, ty);
         }
@@ -97,7 +100,7 @@ class MultiPlayerSocket {
     }
 
     receive_shoot_fireball(uuid, tx, ty, ball_uuid) {
-        let player = this.get_palyer(uuid);
+        let player = this.get_player(uuid);
         if (player) {
             let fireball = player.shoot_fireball(tx, ty);
             fireball.uuid = ball_uuid;
@@ -120,11 +123,26 @@ class MultiPlayerSocket {
     }
 
     receive_attack(uuid, attackee_uuid, x, y, angle, damage, ball_uuid) {
-        let attacker = this.get_palyer(uuid);
-        let attackee = this.get_palyer(attackee_uuid);
+        let attacker = this.get_player(uuid);
+        let attackee = this.get_player(attackee_uuid);
         if (attacker && attackee) {
             attackee.receive_attacked(x, y, angle, damage, ball_uuid, attacker);
         }
+    }
+
+    send_message(text) {
+        let outer = this;
+        this.ws.send(JSON.stringify({
+            'event': 'send_message',
+            'uuid': outer.uuid,
+            'text': text,
+        }));
+    }
+
+    receive_message(uuid, text) {
+        let username = this.get_player(uuid).username;
+        // console.log("receive_message", username, text);
+        this.playground.chat_field.add_message(username, text);
     }
 
 

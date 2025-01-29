@@ -56,10 +56,12 @@ class Player extends AcGameObject {
         this.playground.game_map.$canvas.on("contextmenu", () => {
             return false;
         });
+
+
         this.playground.game_map.$canvas.on("mousedown", (e) => {
             if (this.playground.mode === "multi_mode") {
                 if (this.playground.state === "waiting") {
-                    return false;
+                    return true;
                 }
             }
             const rect = this.ctx.canvas.getBoundingClientRect();
@@ -86,7 +88,20 @@ class Player extends AcGameObject {
             }
         });
 
-        $(window).keydown((e) => {
+        this.playground.game_map.$canvas.keydown((e) => {
+            if (e.which === 13) {
+                if (this.playground.mode === "multi_mode") {
+                    console.log("send message");
+                    this.playground.chat_field.input_show();
+                    return false;
+
+                }
+                if (e.which === 27) {
+                    if (this.playground.mode === "multi_mode") {
+                        this.playground.chat_field.input_hide();
+                    }
+                }
+            }
             if (e.which === 81) {
                 this.cur_skill = "fireball";
 
