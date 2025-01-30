@@ -28,7 +28,12 @@ class AcGameObject {
     }
 
     on_destroy() {
-
+        if (this.is_me === "me") {
+            if (this.playground.state === "fighting") {
+                this.playground.state = "over";
+                this.playground.end_field.lose();
+            }
+        }
     }
     destroy() {
         this.on_destroy();

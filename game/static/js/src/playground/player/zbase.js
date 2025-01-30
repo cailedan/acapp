@@ -219,7 +219,17 @@ class Player extends AcGameObject {
 
         }
     }
+
+    update_win()
+    {
+        if (this.playground.state === "fighting" && this.is_me === "me" && this.playground.players.length === 1)
+        {
+            this.playground.state = "over";
+            this.playground.end_field.win();
+        }
+    }
     update() {
+        this.update_win();
         this.update_move();
         this.render();
 
