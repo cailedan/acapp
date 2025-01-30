@@ -11,7 +11,7 @@ import os
 import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'acapp.settings')
 
-django.setup()
+django.setup() #导入django，不然用thrift时会报错，顺序也很重要，要按照现在这个顺序
 
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter

@@ -10,6 +10,8 @@ from thrift.protocol import TBinaryProtocol
 
 from match_system.src.match_server.match_service import Match
 from game.models.player.player import Player
+from channels.db import database_sync_to_async
+
 
 
 class MultiPlayer(AsyncWebsocketConsumer):
@@ -37,15 +39,15 @@ class MultiPlayer(AsyncWebsocketConsumer):
             # Create a client to use the protocol encoder
             client = Match.Client(protocol)
 
-           # def db_get_player():
-            #    return Player.objects.get(user__username=data['username'])
+            def db_get_player():
+                return Player.objects.get(user__username=data['username'])
 
-            #player = await database_sync_to_async(db_get_player)()
+            player = await database_sync_to_async(db_get_player)()
 
             # Connect!
             transport.open()
 
-            client.add_player(1500, str(data['uuid']), data['username'], data['photo'], self.channel_name)
+            client.add_player(player.score, str(data['uuid']), data['username'], data['photo'], self.channel_name)
 
             # Close!
             transport.close()
@@ -91,6 +93,10 @@ class MultiPlayer(AsyncWebsocketConsumer):
             'text': data['text'],
         })
     async def group_send_event(self, data):
+        if not self.room_name:
+            key = cache.keys('*%s*' % (self.uuid))
+            if key:
+                self.room_name = key[0]
         await self.send(text_data=json.dumps(data))
         
     async def receive(self, text_data):

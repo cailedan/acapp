@@ -16,6 +16,11 @@ from queue import Queue
 from time import sleep
 from threading import Thread
 
+
+from acapp.asgi import channel_layer
+from asgiref.sync import async_to_sync
+from django.core.cache import cache
+
 queue = Queue() #消息队列
 
 class Player:
@@ -33,10 +38,11 @@ class Pool:
 
     def add_player(self , player):
         print("added")
-        print("add player: %s" % (player.username))
+        print("add player: %s %s" % (player.username , player.score))
         self.players.append(player)
     
     def increase_waiting_time(self):
+        
         for player in self.players:
             player.waiting_time += 1
 
@@ -47,10 +53,31 @@ class Pool:
         return  dt <= a_max_dif and dt <= b_max_dif
     def match_success(self , ps):
         print("Match Success: %s %s" % (ps[0].username , ps[1].username))
+        room_name  = 'room-%s-%s' % (ps[0].uuid , ps[1].uuid)
+        players = []
+        for p in ps:
+            async_to_sync(channel_layer.group_add)(room_name , p.channel_name)
+            players.append({
+                'uuid': p.uuid,
+                'username': p.username,
+                'photo': p.photo,
+                'hp': 100,
+            })
+        cache.set(room_name , players , 3600)
+        for p in ps:
+            async_to_sync(channel_layer.group_send)(room_name , {
+                'type': 'group_send_event',
+                'event': 'create_player',
+                'uuid': p.uuid,
+                'username': p.username,
+                'photo': p.photo,
+
+            })
         
 
     def match(self):
         while len(self.players) >= 2:
+            print("match")
             self.players = sorted(self.players , key=lambda  p:p.score)
             flag = False
             for i in range(len(self.players) - 1):
@@ -61,7 +88,8 @@ class Pool:
                     self.match_success([a, b])
                     self.players = self.players[:i] + self.players[i + 2:]
                     break
-                
+            if not flag:
+                 break
             
         
         self.increase_waiting_time()
@@ -89,6 +117,7 @@ class MatchHandler:
     def add_player(self , score , uuid , username , photo , channel_name):
         print('handler add_playerz')
         player = Player(score, uuid , username , photo , channel_name)
+        print('ready add queue')
         queue.put(player)
         return 0   #切记return ， 不然会报错
 
