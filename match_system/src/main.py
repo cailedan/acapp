@@ -61,8 +61,7 @@ class Pool:
                     self.match_success([a, b])
                     self.players = self.players[:i] + self.players[i + 2:]
                     break
-                elif not flag:
-                    break
+                
             
         
         self.increase_waiting_time()
