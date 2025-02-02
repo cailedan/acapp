@@ -87,7 +87,7 @@ class AcGamePlayground {
     }
     playground_hide() {
         while (this.players && this.players.length > 0) {
-            console.log(this.players[0]);
+            //console.log(this.players[0]);
             this.players[0].destroy(); //从AcGameObject中删掉
             this.players.splice(0, 1); // 从players中删掉
         }

@@ -105,10 +105,44 @@ class Settings {
             this.getinfo_acapp();
         }
         else {
-            this.getinfo_web();
+            // this.refresh_jwt_token(); 服务器重启后，可先refresh accesss token
+            if (this.root.access) {
+                console.log("this.getinfo_web");
+
+                this.getinfo_web();
+                this.refresh_jwt_token();
+
+            }
+            else {
+                console.log("this.login");
+                this.login();
+
+            }
             this.add_listening_events();
         }
 
+    }
+
+    refresh_jwt_token() {
+        setInterval(() => {
+            $.ajax({
+                url: "https://app7342.acapp.acwing.com.cn/settings/token/refresh/",
+                type: "post",
+                data: {
+
+                    refresh: this.root.refresh,
+                },
+                // headers: {
+                //     'Authorization': "Bearer " + this.root.access,
+                // },
+                success: (resp) => {
+
+                    this.root.access = resp.access;
+
+
+                }
+            });
+        }, 4.5 * 60 * 1000);
     }
 
     add_listening_events() {
@@ -161,8 +195,8 @@ class Settings {
 
         let outer = this;
         $.ajax({
-            url: "https://app7342.acapp.acwing.com.cn/settings/signin/",
-            type: "GET",
+            url: "https://app7342.acapp.acwing.com.cn/settings/token/",
+            type: "post",
             data: {
 
                 username: username,
@@ -170,12 +204,14 @@ class Settings {
             },
             success: (resp) => {
 
-                if (resp.result === "success") {
-                    location.reload();
-                }
-                else {
-                    outer.$login_error_message.html();
-                }
+                this.root.access = resp.access;
+                this.root.refresh = resp.refresh;
+                this.refresh_jwt_token();
+                this.getinfo_web();
+
+            },
+            error: () => {
+                this.$login_error_message.html("用户名或密码错误");
             }
         });
     }
@@ -208,15 +244,9 @@ class Settings {
             this.root.AcWingOs.api.window.close();
         }
         else {
-            $.ajax({
-                url: "https://app7342.acapp.acwing.com.cn/settings/signout/",
-                type: "GET",
-                success: (resp) => {
-                    if (resp.result === "success") {
-                        location.reload();
-                    }
-                }
-            });
+            this.root.access = "";
+            this.root.refresh = "";
+            location.href = "/";
         }
     }
 
@@ -253,11 +283,17 @@ class Settings {
             data: {
                 platform: outer.platform,
             },
+
+            headers: {
+                'Authorization': "Bearer " + this.root.access,
+            },
+
             success: (resp) => {
-                console.log(resp);
+
                 if (resp.result === "success") {
-                    outer.username = resp.data.username;
-                    outer.photo = resp.data.photo;
+                    console.log("getinfo_web success");
+                    outer.username = resp.username;
+                    outer.photo = resp.photo;
                     outer.settings_hide();
                     outer.root.menu.menu_show();
                 } else {
