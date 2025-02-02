@@ -188,9 +188,9 @@ class Settings {
         })
     }
 
-    login_on_remote() {  //在远程服务器上登录
-        let username = this.$login_username.val();
-        let password = this.$login_password.val();
+    login_on_remote(username, password) {  //在远程服务器上登录
+        username = username || this.$login_username.val();
+        password = password || this.$login_password.val();
         this.$login_error_message.empty();
 
         let outer = this;
@@ -223,15 +223,18 @@ class Settings {
         this.$register_error_message.empty();
         $.ajax({
             url: "https://app7342.acapp.acwing.com.cn/settings/register/",
-            type: "GET",
+            type: "post",
             data: {
-                username: username,
-                password: password,
-                password_confirm: password_confirm,
+                // username: username,
+                // password: password,
+                // password_confirm: password_confirm,
+                username,
+                password,
+                password_confirm,
             },
             success: (resp) => {
                 if (resp.result === "success") {
-                    location.reload();
+                    this.login_on_remote(username, password);
                 } else {
                     outer.$register_error_message.html(resp.result);
                 }
@@ -258,6 +261,9 @@ class Settings {
                 outer.photo = resp.photo;
                 outer.settings_hide();
                 outer.root.menu.menu_show();
+                outer.root.access = resp.access;
+                outer.root.refresh = resp.refresh;
+                outer.refresh_jwt_token();
             }
         });
 
@@ -291,7 +297,7 @@ class Settings {
             success: (resp) => {
 
                 if (resp.result === "success") {
-                    console.log("getinfo_web success");
+
                     outer.username = resp.username;
                     outer.photo = resp.photo;
                     outer.settings_hide();
