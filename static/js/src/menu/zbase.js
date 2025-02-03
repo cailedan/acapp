@@ -29,6 +29,7 @@ class AcGameMenu {
 
     start() {
         this.add_listenning_events();
+        this.avatar = new AvatarSettings(this);
     }
 
     add_listenning_events() {

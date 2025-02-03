@@ -105,7 +105,8 @@ class Settings {
             this.getinfo_acapp();
         }
         else {
-            //this.refresh_jwt_token(); //服务器重启后，可先refresh accesss token
+            this.refresh_jwt_token(); //服务器重启后，可先refresh accesss token
+
             if (this.root.access) {
                 console.log("this.getinfo_web");
 
@@ -116,6 +117,7 @@ class Settings {
             else {
                 console.log("this.login");
                 this.login();
+
 
             }
             this.add_listening_events();
@@ -208,7 +210,7 @@ class Settings {
                 this.root.refresh = resp.refresh;
                 this.refresh_jwt_token();
                 this.getinfo_web();
-
+                console.log("token:" + this.root.access);
             },
             error: () => {
                 this.$login_error_message.html("用户名或密码错误");

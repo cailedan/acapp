@@ -170,6 +170,12 @@ class Player extends AcGameObject {
             }
             return false;
         }
+        if (this.is_me !== "robot") {
+            this.speed *= 1.25;
+        } else {
+            this.speed *= 1.35;
+        }
+
         this.damagex = Math.cos(angle);
         this.damagey = Math.sin(angle);
         this.damage_speed = damage * 10;

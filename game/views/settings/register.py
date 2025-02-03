@@ -24,7 +24,7 @@ class PlayerView(APIView):
                 'result': '用户名已存在',
             })
         user = User.objects.create_user(username=username, password=password)
-        Player.objects.create(user=user , photo='https://cdn.acwing.com/media/article/image/2021/11/18/1_ea3d5e7448-logo64x64_2.png')
+        Player.objects.create(user=user , photo='https://picm.sucaisucai.com/dongwubizhi/shijiegedidongwubizhidierji/animal_2008_animal_1680_desktop_02_44726_m.jpg')
        
         return Response({
             'result': 'success',
