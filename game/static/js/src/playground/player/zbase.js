@@ -89,6 +89,11 @@ class Player extends AcGameObject {
         });
 
         this.playground.game_map.$canvas.keydown((e) => {
+            if (this.playground.mode === "multi_mode") {
+                if (this.playground.state === "waiting") {
+                    return true;
+                }
+            }
             if (e.which === 13) {
                 if (this.playground.mode === "multi_mode") {
                     console.log("send message");
@@ -220,10 +225,8 @@ class Player extends AcGameObject {
         }
     }
 
-    update_win()
-    {
-        if (this.playground.state === "fighting" && this.is_me === "me" && this.playground.players.length === 1)
-        {
+    update_win() {
+        if (this.playground.state === "fighting" && this.is_me === "me" && this.playground.players.length === 1) {
             this.playground.state = "over";
             this.playground.end_field.win();
         }

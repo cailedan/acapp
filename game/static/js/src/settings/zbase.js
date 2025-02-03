@@ -105,7 +105,7 @@ class Settings {
             this.getinfo_acapp();
         }
         else {
-            // this.refresh_jwt_token(); 服务器重启后，可先refresh accesss token
+            //this.refresh_jwt_token(); //服务器重启后，可先refresh accesss token
             if (this.root.access) {
                 console.log("this.getinfo_web");
 
